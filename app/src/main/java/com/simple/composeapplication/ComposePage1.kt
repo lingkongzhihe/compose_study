@@ -77,7 +77,7 @@ fun ComposePage1(name: String, modifier: Modifier = Modifier, viewModel: DataVie
     }
 
     LazyRow(
-        modifier = Modifier.fillMaxHeight()
+        modifier = Modifier.fillMaxHeight(0.2f)
             .windowInsetsPadding(WindowInsets.safeDrawing) ,
         verticalAlignment = Alignment.CenterVertically,
         contentPadding = PaddingValues(start = 20.dp, end = 20.dp)

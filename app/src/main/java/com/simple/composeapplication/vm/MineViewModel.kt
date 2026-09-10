@@ -17,7 +17,7 @@ class MineViewModel: ViewModel() {
 
     fun getList() {
         val articles = ArrayList<ArticleBean>()
-        for (i in 0 until 20) {
+        for (i in 0 until 40) {
             val bean = ArticleBean(articleId = "id_$i", "作品 $i", url, 1000+i)
             articles.add(bean)
         }
