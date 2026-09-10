@@ -3,19 +3,32 @@ package com.simple.composeapplication
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ExpandCircleDown
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,13 +36,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.simple.composeapplication.ui.theme.ComposeApplicationTheme
 import com.simple.composeapplication.vm.DataViewModel
 
 @Composable
-fun ComposePage1(name: String, modifier: Modifier = Modifier, viewModel: DataViewModel = viewModel()) {
+fun ComposePage1(
+    name: String,
+    modifier: Modifier = Modifier,
+    viewModel: DataViewModel = viewModel()
+) {
 //    Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.CenterHorizontally) {
 //        Text("Item 1")
 //        Text("Item 2")
@@ -65,23 +83,61 @@ fun ComposePage1(name: String, modifier: Modifier = Modifier, viewModel: DataVie
 //                    })
 //        }
 //    }
-
+    var selectedCity by remember { mutableStateOf("城市") }
+    var expandedState by remember { mutableStateOf(false) }
+    val cityList by viewModel.cityList.collectAsStateWithLifecycle(emptyList())
     val list by viewModel.list.collectAsStateWithLifecycle()
     val context = LocalContext.current.applicationContext
-
-    // 进页面开一次协程，一直 collect 到离开页面
+    LaunchedEffect(expandedState) {
+        if (expandedState) {
+            viewModel.getCityList()
+        }
+    }
     LaunchedEffect(Unit) {
         viewModel.toastEvent.collect { msg ->
             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
         }
     }
 
-    LazyRow(
-        modifier = Modifier.fillMaxHeight(0.2f)
-            .windowInsetsPadding(WindowInsets.safeDrawing) ,
-        verticalAlignment = Alignment.CenterVertically,
-        contentPadding = PaddingValues(start = 20.dp, end = 20.dp)
-    ) {
+    Column(modifier = modifier) {
+        Box(modifier = Modifier.padding(top = 20.dp, start = 20.dp, end = 20.dp)) {
+            Row(
+                modifier = Modifier.clickable { expandedState = true },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = selectedCity, color = Color.Black, fontSize = 16.sp)
+                Icon(Icons.Default.ExpandCircleDown, contentDescription = null)
+            }
+            DropdownMenu(
+                expanded = expandedState,
+                onDismissRequest = { expandedState = false }
+            ) {
+                cityList.forEach { city ->
+                    DropdownMenuItem(
+                        text = { Text(city) },
+                        leadingIcon = if (city === selectedCity) {
+                            {
+                                Icon(Icons.Default.Check, contentDescription = null)
+                            }
+                        } else {
+                            null
+                        },
+                        onClick = {
+                            selectedCity = city
+                            expandedState = false
+                        }
+                    )
+                }
+            }
+        }
+
+        LazyRow(
+            modifier = Modifier
+                .fillMaxHeight(0.2f)
+                .windowInsetsPadding(WindowInsets.safeDrawing),
+            verticalAlignment = Alignment.CenterVertically,
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp)
+        ) {
         itemsIndexed(list, key = { _, item -> item }) { index, item ->
             val color = if (index % 2 == 0) Color(0xFF87CEEB) else Color.Cyan
             Text(
@@ -99,6 +155,7 @@ fun ComposePage1(name: String, modifier: Modifier = Modifier, viewModel: DataVie
                         viewModel.onItemClick(item)
                     })
         }
+    }
     }
 }
 
