@@ -2,6 +2,7 @@ package com.simple.composeapplication
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.AddLocation
 import androidx.compose.material.icons.filled.AddReaction
+import androidx.compose.material.icons.filled.AttachEmail
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.CircularProgressIndicator
@@ -46,7 +48,11 @@ import coil.compose.SubcomposeAsyncImage
 import com.simple.composeapplication.vm.MineViewModel
 
 @Composable
-fun MinePage(modifier: Modifier, viewModel: MineViewModel = viewModel()) {
+fun MinePage(
+    modifier: Modifier,
+    viewModel: MineViewModel = viewModel(),
+    onOpenIm: () -> Unit = {}
+) {
     val articles by viewModel.list.collectAsStateWithLifecycle()
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     PullToRefreshBox(
@@ -65,12 +71,20 @@ fun MinePage(modifier: Modifier, viewModel: MineViewModel = viewModel()) {
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Column(horizontalAlignment = Alignment.Start) {
-                    Text(
-                        "我的",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 28.sp,
-                        modifier = Modifier.padding(start = 20.dp)
-                    )
+                    Row(modifier = Modifier.fillMaxWidth().padding(start = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            "我的",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 28.sp
+                        )
+                        Icon(
+                            Icons.Default.AttachEmail,
+                            contentDescription = "消息",
+                            modifier = Modifier
+                                .padding(end = 20.dp)
+                                .clickable(onClick = onOpenIm)
+                        )
+                    }
                     Spacer(modifier = Modifier.height(20.dp))
                     SubcomposeAsyncImage(
                         model = "https://gips3.baidu.com/it/u=1148997845,2755062458&fm=3074&app=3074&f=PNG?w=2048&h=2048",
