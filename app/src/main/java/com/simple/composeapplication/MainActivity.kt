@@ -10,6 +10,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.DashboardCustomize
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
@@ -31,7 +32,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ComposeApplicationTheme {
-                val tabs = listOf("首页", "分类", "我的")
+                val tabs = listOf("首页", "分类", "我的", "自定义控件")
                 val pagerState = rememberPagerState(pageCount = { tabs.size })
                 val scope = rememberCoroutineScope()
                 Scaffold(
@@ -51,7 +52,8 @@ class MainActivity : ComponentActivity() {
                                             imageVector = when (index) {
                                                 0 -> Icons.Default.Home
                                                 1 -> Icons.Default.Category
-                                                else -> Icons.Default.Person
+                                                2 -> Icons.Default.Person
+                                                else -> Icons.Default.DashboardCustomize
                                             },
                                             contentDescription = title
                                         )
@@ -75,7 +77,8 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.fillMaxSize()
                             )
                             1 -> ComposeDetailPage(modifier = Modifier.fillMaxSize())
-                            else -> MinePage(modifier = Modifier.fillMaxSize())
+                            2 -> MinePage(modifier = Modifier.fillMaxSize())
+                            else -> CustomView(modifier = Modifier.fillMaxSize())
                         }
                     }
                 }
