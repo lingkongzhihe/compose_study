@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -47,113 +48,120 @@ import com.simple.composeapplication.vm.MineViewModel
 @Composable
 fun MinePage(modifier: Modifier, viewModel: MineViewModel = viewModel()) {
     val articles by viewModel.list.collectAsStateWithLifecycle()
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = { viewModel.refresh() },
         modifier = modifier
-            .padding(top = 40.dp)
-            .background(color = Color.White),
-        contentPadding = PaddingValues(bottom = 10.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        item(span = { GridItemSpan(maxLineSpan) }) {
-            Column(horizontalAlignment = Alignment.Start) {
-                Text(
-                    "我的",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 28.sp,
-                    modifier = Modifier.padding(start = 20.dp)
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                SubcomposeAsyncImage(
-                    model = "https://gips3.baidu.com/it/u=1148997845,2755062458&fm=3074&app=3074&f=PNG?w=2048&h=2048",
-                    contentDescription = "头像",
-                    modifier = Modifier
-                        .align(Alignment.Start)
-                        .padding(start = 20.dp)
-                        .size(48.dp)
-                        .border(2.dp, Color.LightGray, CircleShape)
-                        .clip(CircleShape),
-                    loading = {
-                        Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator(color = Color.LightGray)
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            modifier = Modifier
+                .padding(top = 40.dp)
+                .background(color = Color.White),
+            contentPadding = PaddingValues(bottom = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Column(horizontalAlignment = Alignment.Start) {
+                    Text(
+                        "我的",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 28.sp,
+                        modifier = Modifier.padding(start = 20.dp)
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    SubcomposeAsyncImage(
+                        model = "https://gips3.baidu.com/it/u=1148997845,2755062458&fm=3074&app=3074&f=PNG?w=2048&h=2048",
+                        contentDescription = "头像",
+                        modifier = Modifier
+                            .align(Alignment.Start)
+                            .padding(start = 20.dp)
+                            .size(48.dp)
+                            .border(2.dp, Color.LightGray, CircleShape)
+                            .clip(CircleShape),
+                        loading = {
+                            Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator(color = Color.LightGray)
+                            }
+                        },
+                        error = {
+                            Icon(Icons.Default.BrokenImage, contentDescription = "图片加载失败")
                         }
-                    },
-                    error = {
-                        Icon(Icons.Default.BrokenImage, contentDescription = "图片加载失败")
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .background(Color(0xFFDCDCDC), RoundedCornerShape(12.dp))
+                            .padding(12.dp)
+                            .align(alignment = Alignment.CenterHorizontally),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Column {
+                            Icon(Icons.Default.AddLocation, contentDescription = null)
+                            Spacer(modifier = Modifier.size(10.dp))
+                            Text(text = "广州", fontSize = 12.sp, color = Color.Black)
+                        }
+                        Column {
+                            Icon(Icons.Default.AddCircle, contentDescription = null)
+                            Spacer(modifier = Modifier.size(10.dp))
+                            Text(text = "粉丝", fontSize = 12.sp, color = Color.Black)
+                        }
+                        Column {
+                            Icon(Icons.Default.AddReaction, contentDescription = null)
+                            Spacer(modifier = Modifier.size(10.dp))
+                            Text(text = "关注", fontSize = 12.sp, color = Color.Black)
+                        }
+                        Column {
+                            Icon(Icons.Default.AccountBalanceWallet, contentDescription = null)
+                            Spacer(modifier = Modifier.size(10.dp))
+                            Text(text = "钱包", fontSize = 12.sp, color = Color.Black)
+                        }
                     }
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .background(Color(0xFFDCDCDC), RoundedCornerShape(12.dp))
-                        .padding(12.dp)
-                        .align(alignment = Alignment.CenterHorizontally),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    Column {
-                        Icon(Icons.Default.AddLocation, contentDescription = null)
-                        Spacer(modifier = Modifier.size(10.dp))
-                        Text(text = "广州", fontSize = 12.sp, color = Color.Black)
-                    }
-                    Column {
-                        Icon(Icons.Default.AddCircle, contentDescription = null)
-                        Spacer(modifier = Modifier.size(10.dp))
-                        Text(text = "粉丝", fontSize = 12.sp, color = Color.Black)
-                    }
-                    Column {
-                        Icon(Icons.Default.AddReaction, contentDescription = null)
-                        Spacer(modifier = Modifier.size(10.dp))
-                        Text(text = "关注", fontSize = 12.sp, color = Color.Black)
-                    }
-                    Column {
-                        Icon(Icons.Default.AccountBalanceWallet, contentDescription = null)
-                        Spacer(modifier = Modifier.size(10.dp))
-                        Text(text = "钱包", fontSize = 12.sp, color = Color.Black)
-                    }
+                    Spacer(modifier = Modifier.size(20.dp))
+                    Text(
+                        "我的作品",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(start = 20.dp, bottom = 10.dp)
+                    )
                 }
-                Spacer(modifier = Modifier.size(20.dp))
-                Text(
-                    "我的作品",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    modifier = Modifier.padding(start = 20.dp, bottom = 10.dp)
-                )
             }
-        }
-        itemsIndexed(articles, key = { _, item -> item.articleId }) { _, item ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp)
-            ) {
-                AsyncImage(
-                    model = item.articleImage,
-                    contentScale = ContentScale.FillWidth,
+            itemsIndexed(articles, key = { _, item -> item.articleId }) { _, item ->
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp)),
-                    contentDescription = null
-                )
-                Text(
-                    item.articleTitle, modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(bottom = 8.dp, end = 8.dp),
-                    fontSize = 12.sp,
-                    color = Color.White
-                )
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(start = 8.dp, end = 8.dp)
+                        .padding(horizontal = 4.dp)
                 ) {
-                    Icon(Icons.Default.Public, contentDescription = null)
+                    AsyncImage(
+                        model = item.articleImage,
+                        contentScale = ContentScale.FillWidth,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp)),
+                        contentDescription = null
+                    )
                     Text(
-                        "${item.lookCount}",
+                        item.articleTitle, modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(bottom = 8.dp, end = 8.dp),
                         fontSize = 12.sp,
                         color = Color.White
                     )
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(start = 8.dp, end = 8.dp)
+                    ) {
+                        Icon(Icons.Default.Public, contentDescription = null)
+                        Text(
+                            "${item.lookCount}",
+                            fontSize = 12.sp,
+                            color = Color.White
+                        )
+                    }
                 }
             }
         }
